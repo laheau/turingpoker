@@ -7,6 +7,7 @@ import time
 
 from tg.bot import Bot
 import tg.types as pokerTypes
+from tg.types import *
 
 parser = argparse.ArgumentParser(
     prog='Template bot',
@@ -52,11 +53,27 @@ class KellyCriterion(Bot):
     
         print("me", me)
         print(self.my_id, state.players)
-        raise_to = (p - (1-p)/b)*(me.stack)
+
+        adjust = 1
+        print('round: ', state.round)
+        match PokerRound(state.round):
+            case PokerRound.PRE_FLOP:
+                adjust = 0.3
+            case PokerRound.FLOP:
+                adjust = 0.5
+            case PokerRound.TURN:
+                adjust = 0.7
+            case PokerRound.RIVER:
+                adjust = 0.9
+            case PokerRound.SHOWDOWN:
+                adjust = 1
+            
+        
+        raise_to = (p - (1-p)/b)*(me.stack) * adjust
         print('my stack:', me.stack, raise_to, p, ''.join(map(card_name, hand)), ''.join(map(card_name, state.cards)))
-
+        print('adjust', adjust)
         cost_to_play = min(state.target_bet-me.current_bet, me.stack)
-
+        
         if raise_to > state.target_bet:
             return {'type': 'raise', 'amount': raise_to-state.target_bet}
         elif raise_to >= cost_to_play or cost_to_play == 0:
@@ -73,7 +90,7 @@ class KellyCriterion(Bot):
 
     def start_game(self, my_id):
         self.my_id = my_id
-        self.actual = "Always ALL IN"
+        self.actual = my_id
         print('start game', my_id)
     
     def win_prob(self, state: pokerTypes.PokerSharedState, hand: Tuple[pokerTypes.Card, pokerTypes.Card]):
@@ -83,7 +100,7 @@ class KellyCriterion(Bot):
             treys.Card.new(card_name(hand[1]))]
         board = [treys.Card.new(card_name(card)) for card in state.cards]
         evaluator = treys.Evaluator()
-        sims = int(3e4)
+        sims = int(3e3)
         for i in range(sims):
             deck = treys.Deck()
             deck.shuffle()
