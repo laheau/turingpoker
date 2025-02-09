@@ -60,7 +60,6 @@ class RLBot(Bot):
     def load(self, filename = None):
         self.model = ModelV1(52+52+2+2+2, 2+raise_stages, NN)
         if (filename): self.model.load_state(filename)
-        self.optimiser = torch.optim.Adam(self.model.parameters(), lr=0.0001)
     def convert_card(self, card):
         f = 0
         match Suit(card.suit):

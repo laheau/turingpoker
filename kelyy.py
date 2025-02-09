@@ -72,7 +72,7 @@ class KellyCriterion(Bot):
         pass
 
     def game_over(self, payouts):
-        #print('game over', payouts)
+        print('game over', payouts)
         pass
 
     def start_game(self, my_id):

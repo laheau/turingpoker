@@ -1,0 +1,1 @@
+python3.12 kellycriterion.py --host ws.turingpoker.com --port 80 --room $1 --username "Always ALL IN"
