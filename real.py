@@ -4,10 +4,11 @@ from typing import Tuple
 import argparse
 import treys
 import time
+import numpy as np
 
 from tg.bot import Bot
 from tg.types import *
-from models import ModelV1
+from models import *
 
 parser = argparse.ArgumentParser(
     prog='Template bot',
@@ -24,9 +25,13 @@ parser.add_argument('--username', type=str, default='bot',
 
 args = parser.parse_args()
 
-player_count = 8
+player_count = 2
+rate = 5
+raise_stages = 100/rate
 
 class RLBot(Bot):
+    def load(self, filename):
+        self.model = ModelV1(52+52+2+3+2, 2+raise_stages, NN)
     def convert_card(card):
         f = 0
         match Suit(card.suit):
@@ -49,15 +54,14 @@ class RLBot(Bot):
         pot = state.pot
         round = convert_round(state.round)
         common = [convert_card(c) for c in state.cards]
-        others_info = []
-        us_info = []
         us_hand = [convert_card(c) for c in hand]
+        us_info, others_info = [], []
         for player in state.players:
             if player.id == self.actual:
                 us_info = [player.current_bet, player.stack]
             else:
-                others_info.append(player.current_bet)
-                others_info.append(player.stack)
+                others_info.append(0 if player.folded else player.current_bet)
+                others_info.append(0 if player.folded else player.stack)
 
         hand_mask, common_mask = [0]*52, [0]*52
         for card in us_hand: hand_mask[card] = 1
@@ -66,6 +70,8 @@ class RLBot(Bot):
         info = us_info+others_info
 
         # model inference
+        model_state = np.array(hand_mask+common_mask+[pot, round]+info)
+
 
         # return {'type': 'raise', 'amount': raise_to-state.target_bet}
         # return {'type': 'call'}
@@ -86,4 +92,5 @@ class RLBot(Bot):
 
 if __name__ == "__main__":
     bot = RLBot(args.host, args.port, args.room, args.username)
+    bot.load(filename)
     asyncio.run(bot.start())
