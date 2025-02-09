@@ -30,8 +30,10 @@ rate = 5
 raise_stages = 100/rate
 
 class RLBot(Bot):
-    def load(self, filename):
+    def load(self, filename = None):
         self.model = ModelV1(52+52+2+3+2, 2+raise_stages, NN)
+        if (filename): self.model.load_state(filename)
+
     def convert_card(card):
         f = 0
         match Suit(card.suit):
@@ -72,10 +74,14 @@ class RLBot(Bot):
         # model inference
         model_state = np.array(hand_mask+common_mask+[pot, round]+info)
 
+        inf = self.model.forward(model_state)
+        action = np.argmax(inf)
 
-        # return {'type': 'raise', 'amount': raise_to-state.target_bet}
-        # return {'type': 'call'}
-        return {'type': 'fold'}
+        if (action == 0): return {'type': 'fold'}
+        elif (action == 1): return {'type': 'call'}
+
+        raise_amount = us_info[1]*(action-1)*(rate/100)
+        return {'type': 'raise', 'amount': raise_amount}
 
     def opponent_action(self, action, player):
         pass
@@ -91,6 +97,7 @@ class RLBot(Bot):
     
 
 if __name__ == "__main__":
+    model_file = None
     bot = RLBot(args.host, args.port, args.room, args.username)
-    bot.load(filename)
+    bot.load(model_file)
     asyncio.run(bot.start())

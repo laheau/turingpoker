@@ -8,7 +8,7 @@ class ModelV1():
         self.fc = NN(input_size, output_size)
     
     def forward(self, x):
-        return self.fc(x)
+        return nn.Softmax(self.fc(x))
     
     def load_state(self, filename):
         self.load_state_dict(torch.load(f'{filename}.pth', weights_only=True))
