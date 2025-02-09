@@ -11,7 +11,7 @@ class Bot:
         raise NotImplementedError("Must override act")
     
     @abstractmethod
-    def opponent_action(self, action: types.Action, player: types.PokerPlayer):
+    def opponent_action(self, action: types.Action, player: types.PokerPlayer, state: types.PokerSharedState):
         raise NotImplementedError("Must override opponent_action")
 
     @abstractmethod
@@ -38,7 +38,7 @@ class Bot:
                     for update in state.last_updates:
                         if update.type == types.ServerUpdateMessageType.ACTION.value:
                             if update.player.player_id != state.client_id:
-                                self.opponent_action(update.action, update.player)
+                                self.opponent_action(update.action, update.player, state.game_state)
                                 should_act = True
                         elif update.type == types.ServerUpdateMessageType.GAME_ENDED.value:
                             self.game_over(update.payouts)
@@ -51,9 +51,9 @@ class Bot:
                             should_act = True
                             pass
                     if state.game_state is not None and state.hand is not None:
-                        for player in state.game_state.players:
-                            if player.stack == 0 and player.current_bet == 0:
-                                return
+                        # for player in state.game_state.players:
+                        #     if player.stack == 0 and player.current_bet == 0:
+                        #         return
                         # only move if we are responding to an opponent action
                         if state.game_state.whose_turn == state.username and should_act:
                             try:

@@ -81,8 +81,9 @@ class KellyCriterion(Bot):
         print('fold')
         return {'type': 'fold'}
 
-    def opponent_action(self, action, player):
+    def opponent_action(self, action, player, state):
         pass
+        
 
     def game_over(self, payouts):
         #print('game over', payouts)

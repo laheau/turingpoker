@@ -28,7 +28,7 @@ class TemplateBot(Bot):
         print('acting', state, hand, self.my_id)
         return {'type': 'call'}
 
-    def opponent_action(self, action, player):
+    def opponent_action(self, action, player, state):
         #print('opponent action?', action, player)
         pass
 
