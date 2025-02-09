@@ -12,7 +12,7 @@ done
 trap cleanup EXIT
 
 room=$(openssl rand -hex 12)
-echo $room
-python3 kellycriterion.py --host ws.turingpoker.com --port 80 --room $room-timeout=1000-maxRounds=100-defaultStack=1000-bigBlind=10-smallBlind=5 --username "Always ALL IN" &
-python3 kelyy.py --host ws.turingpoker.com --port 80 --room $room-timeout=1000-maxRounds=100-defaultStack=1000-bigBlind=10-smallBlind=5 --username "Always FOLD" 
-echo
+room=$room-timeout=1000-minPlayers=2-maxRounds=1000-defaultStack=5000-bigBlind=10-smallBlind=5
+echo https://ff1a4817.my-app-22r.pages.dev/games/$room
+python3.12 kellycriterion.py --host ws.turingpoker.com --port 80 --room $room --username "Queen" &
+python3.12 kelyy.py --host ws.turingpoker.com --port 80 --room $room --username "King" 

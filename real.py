@@ -34,29 +34,29 @@ class RLBot(Bot):
         self.model = ModelV1(52+52+2+3+2, 2+raise_stages, NN)
         if (filename): self.model.load_state(filename)
 
-    def convert_card(card):
+    def convert_card(self, card):
         f = 0
         match Suit(card.suit):
-            case HEARTS: f = 0
-            case DIAMONDS: f = 1
-            case CLUBS: f = 2
-            case SPADES: f = 3
+            case Suit.HEARTS: f = 0
+            case Suit.DIAMONDS: f = 1
+            case Suit.CLUBS: f = 2
+            case Suit.SPADES: f = 3
         return card.rank+(f*13)-1
     
-    def convert_round(round):
+    def convert_round(self, round):
         match PokerRound(round):
-            case PRE_FLOP: return 0
-            case FLOP: return 1
-            case TURN: return 2
-            case RIVER: return 3
-            case SHOWDOWN: return 4
+            case PokerRound.PRE_FLOP: return 0
+            case PokerRound.FLOP: return 1
+            case PokerRound.TURN: return 2
+            case PokerRound.RIVER: return 3
+            case PokerRound.SHOWDOWN: return 4
         return -1
 
     def act(self, state, hand):
         pot = state.pot
-        round = convert_round(state.round)
-        common = [convert_card(c) for c in state.cards]
-        us_hand = [convert_card(c) for c in hand]
+        round = self.convert_round(state.round)
+        common = [self.convert_card(c) for c in state.cards]
+        us_hand = [self.convert_card(c) for c in hand]
         us_info, others_info = [], []
         for player in state.players:
             if player.id == self.actual:

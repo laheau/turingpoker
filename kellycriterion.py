@@ -4,6 +4,7 @@ from typing import Tuple
 import argparse
 import treys
 import time
+import random
 
 from tg.bot import Bot
 import tg.types as pokerTypes
@@ -52,31 +53,45 @@ class KellyCriterion(Bot):
         b = len(state.players)
     
         print("me", me)
-        print(self.my_id, state.players)
+        print(self.username, state.players)
 
-        adjust = 1
+        if (PokerRound(state.round) == PokerRound.PRE_FLOP):
+            avg_opp_stack = sum(player.stack+player.current_bet for player in state.players if player.id != self.username) / (b - 1)
+            print(me.stack, avg_opp_stack)
+
+            self.edge = 1.0
+            if me.stack < avg_opp_stack * 0.85: self.edge = 1.2 #1.3
+            elif me.stack > avg_opp_stack * 1.2: self.edge = 0.9
+
+        round_adjust = 1
         print('round: ', state.round)
         match PokerRound(state.round):
             case PokerRound.PRE_FLOP:
-                adjust = 0.7
+                noise = random.uniform(-0.2, 0.4)
+                round_adjust = 0.7+noise
             case PokerRound.FLOP:
-                adjust = 0.8
+                noise = random.uniform(-0.2, 0.4)
+                round_adjust = 0.8+noise
             case PokerRound.TURN:
-                adjust = 0.9
+                noise = random.uniform(-0.2, 0.2)
+                round_adjust = 0.9+noise
             case PokerRound.RIVER:
-                adjust = 1
+                noise = random.uniform(-0.2, 0.2)
+                round_adjust = 1+noise
             case PokerRound.SHOWDOWN:
-                adjust = 1
-            
+                noise = random.uniform(-0.2, 0.2)
+                round_adjust = 1+noise
         
-        raise_to = (p - (1-p)/b)*(me.stack) * adjust
-        print('my stack:', me.stack, raise_to, p, ''.join(map(card_name, hand)), ''.join(map(card_name, state.cards)))
-        print('adjust', adjust)
+        raise_to = (p - (1-p)/b)*(me.stack) * round_adjust
+        print(f'{self.username} Stack:', me.stack, raise_to, p, ''.join(map(card_name, hand)), ''.join(map(card_name, state.cards)))
+        print(f'{self.username}: Adjustment', round_adjust, "Edge", self.edge)
         cost_to_play = min(state.target_bet-me.current_bet, me.stack)
         
-        if raise_to > state.target_bet:
+        if raise_to > state.target_bet*self.edge:
+            print('raise', raise_to-state.target_bet)
             return {'type': 'raise', 'amount': raise_to-state.target_bet}
         elif raise_to >= cost_to_play or cost_to_play == 0:
+            print('call')
             return {'type': 'call'}
         print('fold')
         return {'type': 'fold'}
@@ -85,13 +100,13 @@ class KellyCriterion(Bot):
         pass
 
     def game_over(self, payouts):
-        #print('game over', payouts)
+        print('game over', payouts)
         pass
 
     def start_game(self, my_id, username):
         self.my_id = my_id
         self.username = username
-        print('start game', my_id)
+        # print('start game', my_id)
     
     def win_prob(self, state: pokerTypes.PokerSharedState, hand: Tuple[pokerTypes.Card, pokerTypes.Card]):
         out = 0
@@ -100,7 +115,7 @@ class KellyCriterion(Bot):
             treys.Card.new(card_name(hand[1]))]
         board = [treys.Card.new(card_name(card)) for card in state.cards]
         evaluator = treys.Evaluator()
-        sims = int(3e3)
+        sims = int(7e3)
         for i in range(sims):
             deck = treys.Deck()
             deck.shuffle()

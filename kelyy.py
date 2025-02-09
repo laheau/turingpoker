@@ -72,13 +72,13 @@ class KellyCriterion(Bot):
         pass
 
     def game_over(self, payouts):
-        #print('game over', payouts)
+        print('game over', payouts)
         pass
 
     def start_game(self, my_id, username):
         self.my_id = my_id
         self.username = username
-        print('start game', my_id)
+        # print('start game', my_id)
     
     def win_prob(self, state: pokerTypes.PokerSharedState, hand: Tuple[pokerTypes.Card, pokerTypes.Card]):
         out = 0
