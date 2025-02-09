@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
     
-class ModelV1():
+class ModelV1(nn.Module):
     def __init__(self, input_size, output_size, NN):
         super(ModelV1, self).__init__()
         self.INPUT_SIZE = input_size
@@ -22,7 +22,7 @@ NN = lambda h, o: nn.Sequential(
             nn.Linear(1024, 256),
             nn.ReLU(),
             nn.Linear(256, o),
-            nn.Softmax()
+            nn.LogSoftmax(0)
         )
 
 NN2 = lambda h, o: nn.Sequential(
@@ -35,5 +35,5 @@ NN2 = lambda h, o: nn.Sequential(
             nn.Linear(1024, 256),
             nn.ReLU(),
             nn.Linear(256, o),
-            nn.Softmax()
+            nn.LogSoftmax(0)
         )

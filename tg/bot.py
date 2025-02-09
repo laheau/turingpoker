@@ -19,7 +19,7 @@ class Bot:
         raise NotImplementedError("Must override game_over")
 
     @abstractmethod
-    def start_game(self, my_id: str, username: str):
+    def start_game(self, my_id: str):
         raise NotImplementedError("Must override start_game")
 
     def __init__(self, host: str, port: int, room: str, username: str):
@@ -43,7 +43,7 @@ class Bot:
                         elif update.type == types.ServerUpdateMessageType.GAME_ENDED.value:
                             self.game_over(update.payouts)
                         elif update.type == types.ServerUpdateMessageType.GAME_STARTED.value:
-                            self.start_game(state.client_id, self.username)
+                            self.start_game(state.client_id)
                             should_act = True
                         elif update.type == types.ServerUpdateMessageType.PLAYER_JOINED.value:
                             pass
@@ -51,6 +51,9 @@ class Bot:
                             should_act = True
                             pass
                     if state.game_state is not None and state.hand is not None:
+                        for player in state.game_state.players:
+                            if player.stack == 0 and player.current_bet == 0:
+                                return
                         # only move if we are responding to an opponent action
                         if state.game_state.whose_turn == state.username and should_act:
                             try:

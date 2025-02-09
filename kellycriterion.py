@@ -58,15 +58,15 @@ class KellyCriterion(Bot):
         print('round: ', state.round)
         match PokerRound(state.round):
             case PokerRound.PRE_FLOP:
-                adjust = 0.7
+                adjust = 0.8
             case PokerRound.FLOP:
                 adjust = 0.8
             case PokerRound.TURN:
                 adjust = 0.9
             case PokerRound.RIVER:
-                adjust = 1
+                adjust = 1.2
             case PokerRound.SHOWDOWN:
-                adjust = 1
+                adjust = 1.4
             
         
         raise_to = (p - (1-p)/b)*(me.stack) * adjust
@@ -88,9 +88,9 @@ class KellyCriterion(Bot):
         #print('game over', payouts)
         pass
 
-    def start_game(self, my_id, username):
+    def start_game(self, my_id):
         self.my_id = my_id
-        self.username = username
+        self.username = args.username
         print('start game', my_id)
     
     def win_prob(self, state: pokerTypes.PokerSharedState, hand: Tuple[pokerTypes.Card, pokerTypes.Card]):
