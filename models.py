@@ -9,7 +9,7 @@ class ModelV1():
         self.fc = NN(input_size, output_size)
     
     def forward(self, x):
-        return nn.Softmax(self.fc(x))
+        return self.fc(x)
     
     def load_state(self, filename):
         self.load_state_dict(torch.load(f'{filename}.pth', weights_only=True))
@@ -21,7 +21,8 @@ NN = lambda h, o: nn.Sequential(
             nn.ReLU(),
             nn.Linear(1024, 256),
             nn.ReLU(),
-            nn.Linear(256, o)
+            nn.Linear(256, o),
+            nn.Softmax()
         )
 
 NN2 = lambda h, o: nn.Sequential(
@@ -33,5 +34,6 @@ NN2 = lambda h, o: nn.Sequential(
             nn.ReLU(),
             nn.Linear(1024, 256),
             nn.ReLU(),
-            nn.Linear(256, o)
+            nn.Linear(256, o),
+            nn.Softmax()
         )
