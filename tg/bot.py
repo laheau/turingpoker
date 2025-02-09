@@ -51,9 +51,9 @@ class Bot:
                             should_act = True
                             pass
                     if state.game_state is not None and state.hand is not None:
-                        for player in state.game_state.players:
-                            if player.stack == 0 and player.current_bet == 0:
-                                return
+                        # for player in state.game_state.players:
+                        #     if player.stack == 0 and player.current_bet == 0:
+                        #         return
                         # only move if we are responding to an opponent action
                         if state.game_state.whose_turn == state.username and should_act:
                             try:
