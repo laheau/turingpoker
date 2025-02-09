@@ -4,7 +4,8 @@ import torch.nn as nn
 class ModelV1():
     def __init__(self, input_size, output_size, NN):
         super(ModelV1, self).__init__()
-
+        self.INPUT_SIZE = input_size
+        self.OUTPUT_SIZE = output_size
         self.fc = NN(input_size, output_size)
     
     def forward(self, x):

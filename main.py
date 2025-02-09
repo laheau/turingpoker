@@ -38,7 +38,7 @@ class TemplateBot(Bot):
         cnt += 1
         print(cnt)
 
-    def start_game(self, my_id):
+    def start_game(self, my_id, username):
         self.my_id = my_id
         pass
 

@@ -55,20 +55,7 @@ class KellyCriterion(Bot):
         print(self.my_id, state.players)
 
         adjust = 1
-        print('round: ', state.round)
-        match PokerRound(state.round):
-            case PokerRound.PRE_FLOP:
-                adjust = 0.7
-            case PokerRound.FLOP:
-                adjust = 0.8
-            case PokerRound.TURN:
-                adjust = 0.9
-            case PokerRound.RIVER:
-                adjust = 1
-            case PokerRound.SHOWDOWN:
-                adjust = 1
-            
-        
+    
         raise_to = (p - (1-p)/b)*(me.stack) * adjust
         print('my stack:', me.stack, raise_to, p, ''.join(map(card_name, hand)), ''.join(map(card_name, state.cards)))
         print('adjust', adjust)

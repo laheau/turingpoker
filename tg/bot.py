@@ -19,7 +19,7 @@ class Bot:
         raise NotImplementedError("Must override game_over")
 
     @abstractmethod
-    def start_game(self, my_id: str):
+    def start_game(self, my_id: str, username: str):
         raise NotImplementedError("Must override start_game")
 
     def __init__(self, host: str, port: int, room: str, username: str):
@@ -43,7 +43,7 @@ class Bot:
                         elif update.type == types.ServerUpdateMessageType.GAME_ENDED.value:
                             self.game_over(update.payouts)
                         elif update.type == types.ServerUpdateMessageType.GAME_STARTED.value:
-                            self.start_game(state.client_id)
+                            self.start_game(state.client_id, self.username)
                             should_act = True
                         elif update.type == types.ServerUpdateMessageType.PLAYER_JOINED.value:
                             pass
